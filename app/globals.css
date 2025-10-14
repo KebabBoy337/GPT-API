@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-dark-950 text-white;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background;
+  }
+  
+  .btn-primary {
+    @apply bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800;
+  }
+  
+  .btn-secondary {
+    @apply bg-dark-800 text-white hover:bg-dark-700 active:bg-dark-600 border border-dark-600;
+  }
+  
+  .btn-ghost {
+    @apply text-gray-300 hover:text-white hover:bg-dark-800;
+  }
+  
+  .input {
+    @apply flex h-10 w-full rounded-md border border-dark-600 bg-dark-800 px-3 py-2 text-sm text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  
+  .card {
+    @apply rounded-lg border border-dark-700 bg-dark-800 text-white shadow-sm;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-dark-800;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-dark-600 rounded-md;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-dark-500;
+}
+
+/* Code block styling */
+pre {
+  @apply bg-dark-900 border border-dark-700 rounded-lg p-4 overflow-x-auto;
+}
+
+code {
+  @apply bg-dark-800 px-2 py-1 rounded text-sm font-mono;
+}
+
+/* Markdown content styling */
+.markdown-content {
+  @apply prose prose-invert max-w-none;
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+  @apply text-white font-semibold;
+}
+
+.markdown-content p {
+  @apply text-gray-300 leading-relaxed;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  @apply text-gray-300;
+}
+
+.markdown-content blockquote {
+  @apply border-l-4 border-primary-500 pl-4 italic text-gray-400;
+}
+
+.markdown-content table {
+  @apply w-full border-collapse border border-dark-600;
+}
+
+.markdown-content th,
+.markdown-content td {
+  @apply border border-dark-600 px-4 py-2 text-left;
+}
+
+.markdown-content th {
+  @apply bg-dark-800 font-semibold;
+}
