@@ -43,6 +43,15 @@ export default function Sidebar({
     }
   }, [refreshTrigger])
 
+  // Periodically refresh chats to catch title updates
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchChats()
+    }, 5000) // Check every 5 seconds
+
+    return () => clearInterval(interval)
+  }, [])
+
   const fetchChats = async () => {
     try {
       const response = await fetch('/api/chats')

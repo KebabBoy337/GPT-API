@@ -49,17 +49,28 @@ export async function POST(
     // Get all messages for context
     const messages = await db.getChatMessages(chatId)
     
-    // Generate title if this is the first message
+    // Schedule title generation for first message with 30 second delay
     if (messages.length === 1) {
-      const title = await generateChatTitle(message)
-      await db.updateChatTitle(chatId, title)
+      setTimeout(async () => {
+        try {
+          const title = await generateChatTitle(message)
+          await db.updateChatTitle(chatId, title)
+          console.log('Updated chat title after 30 seconds:', title)
+        } catch (error) {
+          console.error('Error updating chat title:', error)
+        }
+      }, 30000) // 30 seconds delay
     }
 
     // Prepare messages for OpenAI
     const openaiMessages = messages.map(msg => ({
       role: msg.role,
-      content: msg.content,
-      ...(msg.image_url && { image_url: msg.image_url }),
+      content: msg.image_url 
+        ? [
+            { type: "text", text: msg.content },
+            { type: "image_url", image_url: { url: msg.image_url } }
+          ]
+        : msg.content,
     }))
 
     // Generate response from OpenAI

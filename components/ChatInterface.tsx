@@ -39,7 +39,7 @@ export default function ChatInterface({
   const [currentChat, setCurrentChat] = useState<Chat | null>(null)
   const [inputMessage, setInputMessage] = useState('')
   const selectedModel = 'gpt-5' as const
-  const [loading, setLoading] = useState(false)
+  const [loadingStates, setLoadingStates] = useState<Map<number, boolean>>(new Map())
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
@@ -77,10 +77,9 @@ export default function ChatInterface({
   const sendMessage = async () => {
     if (!inputMessage.trim() && !uploadedImage) return
 
-    setLoading(true)
-
+    let chatId = selectedChatId
+    
     try {
-      let chatId = selectedChatId
 
       // Create new chat if none selected
       if (!chatId) {
@@ -109,6 +108,9 @@ export default function ChatInterface({
         }
       }
 
+      // Set loading state for this chat
+      setLoadingStates(prev => new Map(prev).set(chatId, true))
+
       // Send message
       const messageResponse = await fetch(`/api/chats/${chatId}/messages`, {
         method: 'POST',
@@ -125,23 +127,14 @@ export default function ChatInterface({
       if (messageResponse.ok) {
         const data = await messageResponse.json()
         
-        // Add user message to UI immediately
-        const userMessage: Message = {
-          id: Date.now(),
-          role: 'user',
-          content: inputMessage,
-          image_url: uploadedImage || undefined,
-          created_at: new Date().toISOString(),
-        }
-        
-        setMessages(prev => [...prev, userMessage])
+        // Clear input immediately
         setInputMessage('')
         setUploadedImage(null)
 
-        // Add assistant response
-        if (data.message) {
-          setMessages(prev => [...prev, data.message])
-        }
+        // Refresh messages from server to get both user and assistant messages
+        await fetchChatMessages(chatId)
+
+        // Title will be updated automatically after 30 seconds on the server
       } else {
         const errorData = await messageResponse.json()
         throw new Error(errorData.message || 'Failed to send message')
@@ -150,7 +143,13 @@ export default function ChatInterface({
       console.error('Failed to send message:', error)
       // You could show an error message to the user here
     } finally {
-      setLoading(false)
+      setLoadingStates(prev => {
+        const newMap = new Map(prev)
+        if (chatId) {
+          newMap.delete(chatId)
+        }
+        return newMap
+      })
     }
   }
 
@@ -170,7 +169,7 @@ export default function ChatInterface({
   }
 
   return (
-    <div className="flex flex-col h-screen bg-gray-950">
+    <div className="flex flex-col h-screen bg-slate-950">
       {/* Header */}
       {currentChat && (
         <div className="border-b border-white/10 glass-card p-4 backdrop-blur-xl">
@@ -187,15 +186,15 @@ export default function ChatInterface({
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.length === 0 && !loading && (
+        {messages.length === 0 && !loadingStates.get(selectedChatId || 0) && (
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
-              <Bot className="h-20 w-20 text-accent-blue mx-auto mb-6 animate-float" />
-              <h2 className="text-3xl font-bold text-white mb-4 bg-gradient-to-r from-accent-blue to-accent-purple bg-clip-text text-transparent">
+              <Bot className="h-24 w-24 text-accent-blue mx-auto mb-8 animate-float shadow-lg shadow-accent-blue/20" />
+              <h2 className="text-4xl font-bold text-white mb-6 bg-gradient-to-r from-accent-blue via-accent-purple to-accent-indigo bg-clip-text text-transparent">
                 Welcome to xNode GPT
               </h2>
-              <p className="text-gray-300 max-w-md mb-8 text-lg">
-                Start a conversation by typing a message below. You can also upload images for GPT Vision.
+              <p className="text-zinc-300 max-w-lg mb-12 text-xl font-light leading-relaxed">
+                Start a conversation by typing a message below. You can also upload images for AI vision analysis.
               </p>
             </div>
           </div>
@@ -205,14 +204,14 @@ export default function ChatInterface({
           <MessageDisplay key={message.id} message={message} />
         ))}
 
-        {loading && (
+        {loadingStates.get(selectedChatId || 0) && (
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-accent-blue to-accent-purple rounded-full flex items-center justify-center shadow-lg shadow-accent-blue/25">
-              <Bot className="h-4 w-4 text-white" />
+            <div className="w-10 h-10 bg-gradient-to-br from-accent-blue via-accent-purple to-accent-indigo rounded-2xl flex items-center justify-center shadow-xl shadow-accent-blue/30 animate-luxury-glow">
+              <Bot className="h-5 w-5 text-white" />
             </div>
-            <div className="flex items-center gap-2">
-              <Loader2 className="h-4 w-4 animate-spin text-accent-blue" />
-              <span className="text-gray-300">Thinking...</span>
+            <div className="flex items-center gap-3">
+              <Loader2 className="h-5 w-5 animate-spin text-accent-blue" />
+              <span className="text-zinc-300 font-medium">Processing...</span>
             </div>
           </div>
         )}
@@ -221,7 +220,7 @@ export default function ChatInterface({
       </div>
 
       {/* Input Area */}
-      <div className="border-t border-white/10 glass-card p-4 backdrop-blur-xl">
+      <div className="border-t border-zinc-600/30 glass-card p-6 backdrop-blur-xl">
         {uploadedImage && (
           <div className="mb-4 relative">
             <div className="relative inline-block">
@@ -251,16 +250,16 @@ export default function ChatInterface({
               placeholder="Type your message..."
               className="input resize-none h-12 pr-12"
               rows={1}
-              disabled={loading}
+              disabled={loadingStates.get(selectedChatId || 0)}
             />
           </div>
           
           <button
             onClick={sendMessage}
-            disabled={loading || (!inputMessage.trim() && !uploadedImage)}
-            className="btn btn-primary px-4 py-3 disabled:opacity-50 disabled:cursor-not-allowed animate-glow"
+            disabled={loadingStates.get(selectedChatId || 0) || (!inputMessage.trim() && !uploadedImage)}
+            className="btn btn-primary px-6 py-4 disabled:opacity-50 disabled:cursor-not-allowed shadow-xl shadow-accent-blue/10 hover:shadow-2xl hover:shadow-accent-blue/20"
           >
-            {loading ? (
+            {loadingStates.get(selectedChatId || 0) ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <Send className="h-4 w-4" />

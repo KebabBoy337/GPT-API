@@ -53,21 +53,21 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-800 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-accent-blue"></div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-zinc-900 to-slate-800 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-accent-blue shadow-lg shadow-accent-blue/20"></div>
       </div>
     )
   }
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-800 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-zinc-900 to-slate-800 flex items-center justify-center">
         <div className="w-full max-w-md">
-          <div className="text-center mb-8">
-            <h1 className="text-5xl font-bold text-white mb-4 bg-gradient-to-r from-accent-blue to-accent-purple bg-clip-text text-transparent animate-float">
+          <div className="text-center mb-12">
+            <h1 className="text-6xl font-bold text-white mb-6 bg-gradient-to-r from-accent-blue via-accent-purple to-accent-indigo bg-clip-text text-transparent animate-float">
               xNode GPT
             </h1>
-            <p className="text-gray-300 text-lg">Advanced ChatGPT Interface</p>
+            <p className="text-zinc-300 text-xl font-light">Advanced AI Interface</p>
           </div>
           <AuthForm onLogin={handleLogin} />
         </div>
@@ -76,7 +76,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-800 flex">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-zinc-900 to-slate-800 flex">
       <Sidebar
         user={user}
         selectedChatId={selectedChatId}

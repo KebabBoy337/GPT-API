@@ -78,44 +78,21 @@ export async function generateChatResponse(
 
 export async function generateChatTitle(firstMessage: string): Promise<string> {
   try {
-    // Check if we're on server side and client is initialized
-    if (!openai) {
-      return 'New Chat';
+    // Generate title from first few words of the message
+    const words = firstMessage.split(' ').slice(0, 6);
+    let title = words.join(' ');
+    
+    // If title is too long, truncate it
+    if (title.length > 40) {
+      title = title.substring(0, 37) + '...';
     }
-
-    // Check if API key is properly configured
-    if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'dummy-key') {
-      return 'New Chat';
+    
+    // If no meaningful title, use "New Chat"
+    if (title.length < 3) {
+      title = 'New Chat';
     }
-
-    // GPT-5 uses max_completion_tokens instead of max_tokens and only supports default temperature (1)
-    const requestConfig: any = {
-      model: 'gpt-4o-mini-2024-07-18', // Use a cheaper model for title generation
-      messages: [
-        {
-          role: 'system',
-          content: 'Generate a short, descriptive title (max 50 characters) for a chat conversation based on the first message. Return only the title, no quotes or extra text.',
-        },
-        {
-          role: 'user',
-          content: firstMessage,
-        },
-      ],
-    };
-
-    // Configure parameters based on model type
-    if (requestConfig.model.includes('gpt-5')) {
-      requestConfig.max_completion_tokens = 50;
-      // GPT-5 only supports default temperature (1), don't set temperature parameter
-    } else {
-      requestConfig.max_tokens = 50;
-      requestConfig.temperature = 0.7;
-    }
-
-    const response = await openai.chat.completions.create(requestConfig);
-
-    const title = response.choices[0]?.message?.content?.trim() || 'New Chat';
-    return title.length > 50 ? title.substring(0, 47) + '...' : title;
+    
+    return title;
   } catch (error) {
     console.error('Title generation error:', error);
     return 'New Chat';
