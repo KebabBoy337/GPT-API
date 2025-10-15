@@ -1,7 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+node_modules/
 /.pnp
 .pnp.js
 .yarn/install-state.gz
@@ -76,8 +76,8 @@ Thumbs.db
 *.sln
 *.sw?
 
-# Package managers
-package-lock.json
+# Package managers (keep package-lock.json for consistency)
+# package-lock.json
 yarn.lock
 pnpm-lock.yaml
 

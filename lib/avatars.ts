@@ -40,3 +40,4 @@ export function getAvatarGradient(username: string) {
   return `bg-gradient-to-br ${avatar.color}`;
 }
 
+

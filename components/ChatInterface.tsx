@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { Send, Image as ImageIcon, Bot, User, Loader2 } from 'lucide-react'
-import { GPT_MODELS, GPTModel } from '@/lib/openai'
 import MessageDisplay from './MessageDisplay'
 import ImageUpload from './ImageUpload'
+import { GPT_MODELS, GPTModel } from '@/lib/types'
 
 interface Message {
   id: number
