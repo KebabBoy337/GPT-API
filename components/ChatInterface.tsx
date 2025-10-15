@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Send, Image as ImageIcon, Bot, User, Loader2 } from 'lucide-react'
 import MessageDisplay from './MessageDisplay'
 import ImageUpload from './ImageUpload'
-import { GPT_MODELS, GPTModel } from '@/lib/types'
+// GPT-5 is the only model available
 
 interface Message {
   id: number
@@ -38,7 +38,7 @@ export default function ChatInterface({
   const [messages, setMessages] = useState<Message[]>([])
   const [currentChat, setCurrentChat] = useState<Chat | null>(null)
   const [inputMessage, setInputMessage] = useState('')
-  const [selectedModel, setSelectedModel] = useState<GPTModel>('gpt-5')
+  const selectedModel = 'gpt-5' as const
   const [loading, setLoading] = useState(false)
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -170,7 +170,7 @@ export default function ChatInterface({
   }
 
   return (
-    <div className="flex flex-col h-screen bg-dark-950">
+    <div className="flex flex-col h-screen bg-gray-950">
       {/* Header */}
       {currentChat && (
         <div className="border-b border-white/10 glass-card p-4 backdrop-blur-xl">
@@ -178,20 +178,9 @@ export default function ChatInterface({
             <div>
               <h1 className="text-xl font-semibold text-white">{currentChat.title}</h1>
               <p className="text-sm text-gray-300">
-                Model: {GPT_MODELS.find(m => m.id === currentChat.model)?.name}
+                Model: GPT-5
               </p>
             </div>
-            <select
-              value={selectedModel}
-              onChange={(e) => setSelectedModel(e.target.value as GPTModel)}
-              className="input w-48"
-            >
-              {GPT_MODELS.map((model) => (
-                <option key={model.id} value={model.id}>
-                  {model.name}
-                </option>
-              ))}
-            </select>
           </div>
         </div>
       )}
@@ -234,12 +223,12 @@ export default function ChatInterface({
 
         {loading && (
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-br from-accent-blue to-accent-purple rounded-full flex items-center justify-center shadow-lg shadow-accent-blue/25">
               <Bot className="h-4 w-4 text-white" />
             </div>
             <div className="flex items-center gap-2">
-              <Loader2 className="h-4 w-4 animate-spin text-primary-500" />
-              <span className="text-gray-400">Thinking...</span>
+              <Loader2 className="h-4 w-4 animate-spin text-accent-blue" />
+              <span className="text-gray-300">Thinking...</span>
             </div>
           </div>
         )}

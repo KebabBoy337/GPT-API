@@ -63,9 +63,13 @@ export async function POST(
     }))
 
     // Generate response from OpenAI
+    console.log('Generating response for model:', model);
+    console.log('OpenAI messages:', JSON.stringify(openaiMessages, null, 2));
+    
     const response = await generateChatResponse(openaiMessages, model)
 
     if (response.error) {
+      console.error('OpenAI response error:', response.error);
       return NextResponse.json(
         { success: false, message: response.error },
         { status: 500 }

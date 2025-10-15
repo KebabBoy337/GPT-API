@@ -101,7 +101,7 @@ export default function Sidebar({
       {/* Header */}
       <div className="p-4 border-b border-white/10">
         <button
-          onClick={onNewChat}
+          onClick={() => onChatSelect(null)}
           className="btn btn-primary w-full flex items-center justify-center gap-2 animate-glow"
         >
           <Plus className="h-4 w-4" />
@@ -128,7 +128,7 @@ export default function Sidebar({
       <div className="flex-1 overflow-y-auto">
         {loading ? (
           <div className="p-4 text-center">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-500 mx-auto"></div>
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-accent-blue mx-auto"></div>
           </div>
         ) : chats.length === 0 ? (
           <div className="p-4 text-center text-gray-300">

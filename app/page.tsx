@@ -48,24 +48,23 @@ export default function Home() {
   }
 
   const handleNewChat = () => {
-    setSelectedChatId(null)
     setRefreshChats(prev => prev + 1)
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-dark-950 via-dark-900 to-dark-800 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-neon-blue"></div>
+      <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-800 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-accent-blue"></div>
       </div>
     )
   }
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-dark-950 via-dark-900 to-dark-800 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-800 flex items-center justify-center">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <h1 className="text-5xl font-bold text-white mb-4 bg-gradient-to-r from-neon-blue to-neon-purple bg-clip-text text-transparent animate-float">
+            <h1 className="text-5xl font-bold text-white mb-4 bg-gradient-to-r from-accent-blue to-accent-purple bg-clip-text text-transparent animate-float">
               xNode GPT
             </h1>
             <p className="text-gray-300 text-lg">Advanced ChatGPT Interface</p>
@@ -77,7 +76,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-dark-950 via-dark-900 to-dark-800 flex">
+    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-800 flex">
       <Sidebar
         user={user}
         selectedChatId={selectedChatId}

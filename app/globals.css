@@ -4,11 +4,11 @@
 
 @layer base {
   * {
-    @apply border-dark-600;
+    @apply border-gray-600;
   }
   
   body {
-    @apply bg-gradient-to-br from-dark-950 via-dark-900 to-dark-800 text-white;
+    @apply bg-gradient-to-br from-gray-950 via-gray-900 to-gray-800 text-white;
     font-feature-settings: "rlig" 1, "calt" 1;
     background-attachment: fixed;
   }
@@ -22,8 +22,8 @@
     right: 0;
     bottom: 0;
     background: 
-      radial-gradient(circle at 20% 80%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, rgba(168, 85, 247, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
       radial-gradient(circle at 40% 40%, rgba(236, 72, 153, 0.05) 0%, transparent 50%);
     pointer-events: none;
     z-index: -1;
@@ -32,39 +32,39 @@
 
 @layer components {
   .btn {
-    @apply inline-flex items-center justify-center rounded-xl text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon-blue focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-dark-950 backdrop-blur-sm;
+    @apply inline-flex items-center justify-center rounded-xl text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-gray-950 backdrop-blur-sm;
   }
   
   .btn-primary {
-    @apply bg-gradient-to-r from-neon-blue to-neon-purple text-white hover:shadow-lg hover:shadow-neon-blue/25 active:scale-95 border border-neon-blue/30;
+    @apply bg-gray-800 text-white hover:bg-gray-700 active:scale-95 border-2 border-accent-blue shadow-lg shadow-accent-blue/20;
   }
   
   .btn-secondary {
-    @apply bg-glass-200 text-white hover:bg-glass-300 active:scale-95 border border-dark-600/50 backdrop-blur-md;
+    @apply bg-gray-700 text-white hover:bg-gray-600 active:scale-95 border border-gray-600 backdrop-blur-md;
   }
   
   .btn-ghost {
-    @apply text-gray-300 hover:text-white hover:bg-glass-100 backdrop-blur-sm;
+    @apply text-gray-300 hover:text-white hover:bg-gray-800 backdrop-blur-sm;
   }
   
   .input {
-    @apply flex h-10 w-full rounded-xl border border-dark-600/50 bg-glass-100 backdrop-blur-md px-3 py-2 text-sm text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-neon-blue focus:border-neon-blue disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-300;
+    @apply flex h-10 w-full rounded-xl border border-gray-600/50 bg-gray-800/80 backdrop-blur-md px-3 py-2 text-sm text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-blue focus:border-accent-blue disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-300;
   }
   
   .card {
-    @apply rounded-xl border border-dark-600/30 bg-glass-100 backdrop-blur-md text-white shadow-xl hover:shadow-2xl transition-all duration-300;
+    @apply rounded-xl border border-gray-600/30 bg-gray-800/80 backdrop-blur-md text-white shadow-xl hover:shadow-2xl transition-all duration-300;
   }
   
   .glass-card {
-    @apply rounded-xl border border-white/20 bg-glass-200 backdrop-blur-md shadow-xl;
+    @apply rounded-xl border border-gray-600/50 bg-gray-800/90 backdrop-blur-md shadow-xl;
   }
   
   .neon-border {
-    @apply border border-neon-blue/50 shadow-lg shadow-neon-blue/20;
+    @apply border-2 border-accent-blue shadow-lg shadow-accent-blue/20;
   }
   
   .avatar-gradient {
-    @apply bg-gradient-to-br from-neon-blue via-neon-purple to-neon-pink;
+    @apply bg-gradient-to-br from-accent-blue via-accent-purple to-accent-pink;
   }
 }
 
@@ -74,24 +74,24 @@
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-glass-100 backdrop-blur-sm;
+  @apply bg-gray-800/50 backdrop-blur-sm;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-neon-blue/50 rounded-md backdrop-blur-sm;
+  @apply bg-accent-blue/50 rounded-md backdrop-blur-sm;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-neon-blue/70;
+  @apply bg-accent-blue/70;
 }
 
 /* Code block styling */
 pre {
-  @apply bg-glass-200 backdrop-blur-md border border-neon-blue/30 rounded-xl p-4 overflow-x-auto shadow-lg shadow-neon-blue/10;
+  @apply bg-gray-800/90 backdrop-blur-md border border-accent-blue/30 rounded-xl p-4 overflow-x-auto shadow-lg shadow-accent-blue/10;
 }
 
 code {
-  @apply bg-glass-100 backdrop-blur-sm px-2 py-1 rounded-lg text-sm font-mono border border-dark-600/30;
+  @apply bg-gray-700/80 backdrop-blur-sm px-2 py-1 rounded-lg text-sm font-mono border border-gray-600/30;
 }
 
 /* Markdown content styling */
@@ -118,18 +118,18 @@ code {
 }
 
 .markdown-content blockquote {
-  @apply border-l-4 border-primary-500 pl-4 italic text-gray-400;
+  @apply border-l-4 border-accent-blue pl-4 italic text-gray-400;
 }
 
 .markdown-content table {
-  @apply w-full border-collapse border border-dark-600;
+  @apply w-full border-collapse border border-gray-600/50;
 }
 
 .markdown-content th,
 .markdown-content td {
-  @apply border border-dark-600 px-4 py-2 text-left;
+  @apply border border-gray-600/50 px-4 py-2 text-left;
 }
 
 .markdown-content th {
-  @apply bg-dark-800 font-semibold;
+  @apply bg-gray-700/80 font-semibold backdrop-blur-sm;
 }
