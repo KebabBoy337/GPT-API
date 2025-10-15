@@ -41,23 +41,23 @@ export default function MessageDisplay({ message }: MessageDisplayProps) {
   return (
     <div className={`flex gap-3 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
       {message.role === 'assistant' && (
-        <div className="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center flex-shrink-0">
-          <Bot className="h-4 w-4 text-white" />
+        <div className="w-10 h-10 bg-gradient-to-br from-neon-blue to-neon-purple rounded-full flex items-center justify-center flex-shrink-0 shadow-lg shadow-neon-blue/25">
+          <Bot className="h-5 w-5 text-white" />
         </div>
       )}
       
       <div className={`max-w-[80%] ${message.role === 'user' ? 'order-first' : ''}`}>
-        <div className={`rounded-lg p-4 ${
+        <div className={`rounded-xl p-4 ${
           message.role === 'user' 
-            ? 'bg-primary-600 text-white' 
-            : 'bg-dark-800 text-white border border-dark-700'
+            ? 'bg-gradient-to-r from-neon-blue to-neon-purple text-white shadow-lg shadow-neon-blue/25' 
+            : 'glass-card text-white border border-white/20 backdrop-blur-md'
         }`}>
           {message.image_url && (
             <div className="mb-3">
               <img
                 src={message.image_url}
                 alt="User uploaded"
-                className="max-w-full max-h-64 rounded-lg border border-dark-600"
+                className="max-w-full max-h-64 rounded-xl border border-neon-blue/30 shadow-lg"
               />
             </div>
           )}
@@ -66,8 +66,9 @@ export default function MessageDisplay({ message }: MessageDisplayProps) {
             <div className="markdown-content">
               <ReactMarkdown
                 components={{
-                  code({ node, inline, className, children, ...props }) {
+                  code({ className, children, ...props }: any) {
                     const match = /language-(\w+)/.exec(className || '')
+                    const inline = !match
                     return !inline && match ? (
                       <SyntaxHighlighter
                         style={vscDarkPlus}
@@ -174,8 +175,8 @@ export default function MessageDisplay({ message }: MessageDisplayProps) {
       </div>
       
       {message.role === 'user' && (
-        <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center flex-shrink-0">
-          <User className="h-4 w-4 text-white" />
+        <div className="w-10 h-10 bg-gradient-to-br from-neon-green to-neon-blue rounded-full flex items-center justify-center flex-shrink-0 shadow-lg shadow-neon-green/25">
+          <User className="h-5 w-5 text-white" />
         </div>
       )}
     </div>

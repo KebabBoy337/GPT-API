@@ -39,12 +39,19 @@ class Database {
   }
 
   private async init() {
-    const run = promisify(this.db.run.bind(this.db));
-    const get = promisify(this.db.get.bind(this.db));
-    const all = promisify(this.db.all.bind(this.db));
+
+    // Helper function for db.run with Promise
+    const runQuery = (sql: string): Promise<void> => {
+      return new Promise((resolve, reject) => {
+        this.db.run(sql, (err) => {
+          if (err) reject(err);
+          else resolve();
+        });
+      });
+    };
 
     // Create users table
-    await run(`
+    await runQuery(`
       CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT UNIQUE NOT NULL,
@@ -55,7 +62,7 @@ class Database {
     `);
 
     // Create chats table
-    await run(`
+    await runQuery(`
       CREATE TABLE IF NOT EXISTS chats (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER NOT NULL,
@@ -68,7 +75,7 @@ class Database {
     `);
 
     // Create messages table
-    await run(`
+    await runQuery(`
       CREATE TABLE IF NOT EXISTS messages (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         chat_id INTEGER NOT NULL,
@@ -81,108 +88,178 @@ class Database {
     `);
 
     // Create indexes
-    await run(`CREATE INDEX IF NOT EXISTS idx_chats_user_id ON chats (user_id)`);
-    await run(`CREATE INDEX IF NOT EXISTS idx_messages_chat_id ON messages (chat_id)`);
+    await runQuery(`CREATE INDEX IF NOT EXISTS idx_chats_user_id ON chats (user_id)`);
+    await runQuery(`CREATE INDEX IF NOT EXISTS idx_messages_chat_id ON messages (chat_id)`);
   }
 
   async getUserCount(): Promise<number> {
-    const get = promisify(this.db.get.bind(this.db));
-    const result = await get('SELECT COUNT(*) as count FROM users');
+    const result = await new Promise<{ count: number }>((resolve, reject) => {
+      this.db.get('SELECT COUNT(*) as count FROM users', (err, row) => {
+        if (err) reject(err);
+        else resolve(row as { count: number });
+      });
+    });
     return result.count;
   }
 
   async createUser(username: string, email: string, passwordHash: string): Promise<User> {
-    const run = promisify(this.db.run.bind(this.db));
-    const get = promisify(this.db.get.bind(this.db));
 
-    await run(
-      'INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)',
-      [username, email, passwordHash]
-    );
+    await new Promise<void>((resolve, reject) => {
+      this.db.run(
+        'INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)',
+        [username, email, passwordHash],
+        (err) => {
+          if (err) reject(err);
+          else resolve();
+        }
+      );
+    });
 
-    const user = await get('SELECT * FROM users WHERE username = ?', [username]);
-    return user;
+    const user = await new Promise<User | null>((resolve, reject) => {
+      this.db.get('SELECT * FROM users WHERE username = ?', [username], (err, row) => {
+        if (err) reject(err);
+        else resolve(row as User || null);
+      });
+    });
+    return user!;
   }
 
   async getUserByUsername(username: string): Promise<User | null> {
-    const get = promisify(this.db.get.bind(this.db));
-    const user = await get('SELECT * FROM users WHERE username = ?', [username]);
-    return user || null;
+    const user = await new Promise<User | null>((resolve, reject) => {
+      this.db.get('SELECT * FROM users WHERE username = ?', [username], (err, row) => {
+        if (err) reject(err);
+        else resolve(row as User || null);
+      });
+    });
+    return user;
   }
 
   async getUserByEmail(email: string): Promise<User | null> {
-    const get = promisify(this.db.get.bind(this.db));
-    const user = await get('SELECT * FROM users WHERE email = ?', [email]);
-    return user || null;
+    const user = await new Promise<User | null>((resolve, reject) => {
+      this.db.get('SELECT * FROM users WHERE email = ?', [email], (err, row) => {
+        if (err) reject(err);
+        else resolve(row as User || null);
+      });
+    });
+    return user;
   }
 
   async getUserById(id: number): Promise<User | null> {
-    const get = promisify(this.db.get.bind(this.db));
-    const user = await get('SELECT * FROM users WHERE id = ?', [id]);
-    return user || null;
+    const user = await new Promise<User | null>((resolve, reject) => {
+      this.db.get('SELECT * FROM users WHERE id = ?', [id], (err, row) => {
+        if (err) reject(err);
+        else resolve(row as User || null);
+      });
+    });
+    return user;
   }
 
   async createChat(userId: number, title: string, model: string): Promise<Chat> {
-    const run = promisify(this.db.run.bind(this.db));
-    const get = promisify(this.db.get.bind(this.db));
 
-    await run(
-      'INSERT INTO chats (user_id, title, model) VALUES (?, ?, ?)',
-      [userId, title, model]
-    );
+    await new Promise<void>((resolve, reject) => {
+      this.db.run(
+        'INSERT INTO chats (user_id, title, model) VALUES (?, ?, ?)',
+        [userId, title, model],
+        (err) => {
+          if (err) reject(err);
+          else resolve();
+        }
+      );
+    });
 
-    const chat = await get('SELECT * FROM chats WHERE user_id = ? ORDER BY created_at DESC LIMIT 1', [userId]);
-    return chat;
+    const chat = await new Promise<Chat | null>((resolve, reject) => {
+      this.db.get('SELECT * FROM chats WHERE user_id = ? ORDER BY created_at DESC LIMIT 1', [userId], (err, row) => {
+        if (err) reject(err);
+        else resolve(row as Chat || null);
+      });
+    });
+    return chat!;
   }
 
   async getUserChats(userId: number): Promise<Chat[]> {
-    const all = promisify(this.db.all.bind(this.db));
-    const chats = await all(
-      'SELECT * FROM chats WHERE user_id = ? ORDER BY updated_at DESC',
-      [userId]
-    );
+    const chats = await new Promise<Chat[]>((resolve, reject) => {
+      this.db.all(
+        'SELECT * FROM chats WHERE user_id = ? ORDER BY updated_at DESC',
+        [userId],
+        (err, rows) => {
+          if (err) reject(err);
+          else resolve(rows as Chat[]);
+        }
+      );
+    });
     return chats;
   }
 
   async getChatById(chatId: number): Promise<Chat | null> {
-    const get = promisify(this.db.get.bind(this.db));
-    const chat = await get('SELECT * FROM chats WHERE id = ?', [chatId]);
-    return chat || null;
+    const chat = await new Promise<Chat | null>((resolve, reject) => {
+      this.db.get('SELECT * FROM chats WHERE id = ?', [chatId], (err, row) => {
+        if (err) reject(err);
+        else resolve(row as Chat || null);
+      });
+    });
+    return chat;
   }
 
   async updateChatTitle(chatId: number, title: string): Promise<void> {
-    const run = promisify(this.db.run.bind(this.db));
-    await run(
-      'UPDATE chats SET title = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
-      [title, chatId]
-    );
+    await new Promise<void>((resolve, reject) => {
+      this.db.run(
+        'UPDATE chats SET title = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+        [title, chatId],
+        (err) => {
+          if (err) reject(err);
+          else resolve();
+        }
+      );
+    });
   }
 
   async addMessage(chatId: number, role: 'user' | 'assistant', content: string, imageUrl?: string): Promise<Message> {
-    const run = promisify(this.db.run.bind(this.db));
-    const get = promisify(this.db.get.bind(this.db));
 
-    await run(
-      'INSERT INTO messages (chat_id, role, content, image_url) VALUES (?, ?, ?, ?)',
-      [chatId, role, content, imageUrl]
-    );
+    await new Promise<void>((resolve, reject) => {
+      this.db.run(
+        'INSERT INTO messages (chat_id, role, content, image_url) VALUES (?, ?, ?, ?)',
+        [chatId, role, content, imageUrl],
+        (err) => {
+          if (err) reject(err);
+          else resolve();
+        }
+      );
+    });
 
-    const message = await get('SELECT * FROM messages WHERE chat_id = ? ORDER BY created_at DESC LIMIT 1', [chatId]);
-    return message;
+    const message = await new Promise<Message | null>((resolve, reject) => {
+      this.db.get('SELECT * FROM messages WHERE chat_id = ? ORDER BY created_at DESC LIMIT 1', [chatId], (err, row) => {
+        if (err) reject(err);
+        else resolve(row as Message || null);
+      });
+    });
+    return message!;
   }
 
   async getChatMessages(chatId: number): Promise<Message[]> {
-    const all = promisify(this.db.all.bind(this.db));
-    const messages = await all(
-      'SELECT * FROM messages WHERE chat_id = ? ORDER BY created_at ASC',
-      [chatId]
-    );
+    const messages = await new Promise<Message[]>((resolve, reject) => {
+      this.db.all(
+        'SELECT * FROM messages WHERE chat_id = ? ORDER BY created_at ASC',
+        [chatId],
+        (err, rows) => {
+          if (err) reject(err);
+          else resolve(rows as Message[]);
+        }
+      );
+    });
     return messages;
   }
 
   async deleteChat(chatId: number): Promise<void> {
-    const run = promisify(this.db.run.bind(this.db));
-    await run('DELETE FROM chats WHERE id = ?', [chatId]);
+    await new Promise<void>((resolve, reject) => {
+      this.db.run(
+        'DELETE FROM chats WHERE id = ?',
+        [chatId],
+        (err) => {
+          if (err) reject(err);
+          else resolve();
+        }
+      );
+    });
   }
 
   close() {

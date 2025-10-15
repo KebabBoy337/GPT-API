@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Plus, MessageSquare, Settings, LogOut, Trash2 } from 'lucide-react'
 import { AuthUser } from '@/lib/auth'
+import { generateAvatar } from '@/lib/avatars'
 
 interface Chat {
   id: number
@@ -18,6 +19,7 @@ interface SidebarProps {
   onChatSelect: (chatId: number | null) => void
   onNewChat: () => void
   onLogout: () => void
+  refreshTrigger?: number
 }
 
 export default function Sidebar({
@@ -26,6 +28,7 @@ export default function Sidebar({
   onChatSelect,
   onNewChat,
   onLogout,
+  refreshTrigger,
 }: SidebarProps) {
   const [chats, setChats] = useState<Chat[]>([])
   const [loading, setLoading] = useState(true)
@@ -33,6 +36,12 @@ export default function Sidebar({
   useEffect(() => {
     fetchChats()
   }, [])
+
+  useEffect(() => {
+    if (refreshTrigger && refreshTrigger > 0) {
+      fetchChats()
+    }
+  }, [refreshTrigger])
 
   const fetchChats = async () => {
     try {
@@ -85,13 +94,15 @@ export default function Sidebar({
     }
   }
 
+  const userAvatar = generateAvatar(user.username);
+
   return (
-    <div className="w-80 bg-dark-900 border-r border-dark-700 flex flex-col h-screen">
+    <div className="w-80 glass-card border-r border-white/10 flex flex-col h-screen backdrop-blur-xl">
       {/* Header */}
-      <div className="p-4 border-b border-dark-700">
+      <div className="p-4 border-b border-white/10">
         <button
           onClick={onNewChat}
-          className="btn btn-primary w-full flex items-center justify-center gap-2"
+          className="btn btn-primary w-full flex items-center justify-center gap-2 animate-glow"
         >
           <Plus className="h-4 w-4" />
           New Chat
@@ -99,16 +110,16 @@ export default function Sidebar({
       </div>
 
       {/* User Info */}
-      <div className="p-4 border-b border-dark-700">
+      <div className="p-4 border-b border-white/10">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-primary-600 rounded-full flex items-center justify-center">
-            <span className="text-white font-semibold">
-              {user.username.charAt(0).toUpperCase()}
+          <div className={`w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-br ${userAvatar.color} shadow-lg shadow-${userAvatar.color.split('-')[1]}-500/25 animate-float`}>
+            <span className="text-white font-bold text-lg">
+              {userAvatar.icon}
             </span>
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-white font-medium truncate">{user.username}</p>
-            <p className="text-gray-400 text-sm truncate">{user.email}</p>
+            <p className="text-gray-300 text-sm truncate">{user.email}</p>
           </div>
         </div>
       </div>
@@ -120,7 +131,7 @@ export default function Sidebar({
             <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-500 mx-auto"></div>
           </div>
         ) : chats.length === 0 ? (
-          <div className="p-4 text-center text-gray-400">
+          <div className="p-4 text-center text-gray-300">
             <MessageSquare className="h-8 w-8 mx-auto mb-2 opacity-50" />
             <p>No chats yet</p>
             <p className="text-sm">Start a new conversation</p>
@@ -131,13 +142,13 @@ export default function Sidebar({
               <div
                 key={chat.id}
                 onClick={() => onChatSelect(chat.id)}
-                className={`group flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
+                className={`group flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all duration-300 backdrop-blur-sm ${
                   selectedChatId === chat.id
-                    ? 'bg-primary-600/20 border border-primary-500/30'
-                    : 'hover:bg-dark-800'
+                    ? 'bg-glass-300 border border-neon-blue/50 shadow-lg shadow-neon-blue/20'
+                    : 'hover:bg-glass-200 border border-transparent hover:border-white/20'
                 }`}
               >
-                <MessageSquare className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                <MessageSquare className="h-4 w-4 text-gray-300 flex-shrink-0" />
                 <div className="flex-1 min-w-0">
                   <p className="text-white text-sm font-medium truncate">
                     {chat.title}
@@ -148,7 +159,7 @@ export default function Sidebar({
                 </div>
                 <button
                   onClick={(e) => deleteChat(chat.id, e)}
-                  className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-400 transition-opacity"
+                  className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-neon-red transition-all duration-300"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -159,7 +170,7 @@ export default function Sidebar({
       </div>
 
       {/* Footer */}
-      <div className="p-4 border-t border-dark-700">
+      <div className="p-4 border-t border-white/10">
         <button
           onClick={onLogout}
           className="btn btn-ghost w-full flex items-center justify-center gap-2"
@@ -168,8 +179,8 @@ export default function Sidebar({
           Logout
         </button>
         <div className="text-center mt-3">
-          <p className="text-xs text-gray-500">
-            xNode GPT v{process.env.NEXT_PUBLIC_APP_VERSION || '1.0.0'}
+          <p className="text-xs text-gray-400">
+            xNode GPT v{process.env.NEXT_PUBLIC_APP_VERSION || '2.0.0'}
           </p>
         </div>
       </div>

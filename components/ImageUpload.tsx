@@ -33,17 +33,17 @@ export default function ImageUpload({ onImageUpload }: ImageUploadProps) {
   return (
     <div
       {...getRootProps()}
-      className={`flex items-center justify-center p-3 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
+      className={`flex items-center justify-center p-3 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-300 backdrop-blur-sm ${
         isDragActive
-          ? 'border-primary-500 bg-primary-500/10'
-          : 'border-dark-600 hover:border-primary-500 hover:bg-primary-500/5'
+          ? 'border-neon-blue bg-neon-blue/10 shadow-lg shadow-neon-blue/20'
+          : 'border-white/20 hover:border-neon-blue hover:bg-neon-blue/5 hover:shadow-lg hover:shadow-neon-blue/10'
       }`}
     >
       <input {...getInputProps()} />
-      <div className="flex items-center gap-2 text-gray-400">
+      <div className="flex items-center gap-2 text-gray-300">
         {isDragActive ? (
           <>
-            <Upload className="h-4 w-4" />
+            <Upload className="h-4 w-4 text-neon-blue" />
             <span className="text-sm">Drop image here...</span>
           </>
         ) : (

@@ -56,18 +56,18 @@ export default function AuthForm({ onLogin }: AuthFormProps) {
   }
 
   return (
-    <div className="card p-8">
+    <div className="glass-card p-8 neon-border">
       <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold text-white mb-2">
+        <h2 className="text-3xl font-bold text-white mb-3 bg-gradient-to-r from-neon-blue to-neon-purple bg-clip-text text-transparent">
           {isLogin ? 'Welcome Back' : 'Create Account'}
         </h2>
-        <p className="text-gray-400">
+        <p className="text-gray-300 text-lg">
           {isLogin ? 'Sign in to continue' : 'Join xNode GPT'}
         </p>
       </div>
 
       {error && (
-        <div className="bg-red-900/20 border border-red-500 text-red-300 px-4 py-3 rounded-md mb-4">
+        <div className="bg-neon-red/20 border border-neon-red text-neon-red px-4 py-3 rounded-xl mb-4 backdrop-blur-sm">
           {error}
         </div>
       )}
@@ -142,7 +142,7 @@ export default function AuthForm({ onLogin }: AuthFormProps) {
         <button
           type="submit"
           disabled={loading}
-          className="btn btn-primary w-full py-3 text-base"
+          className="btn btn-primary w-full py-3 text-base animate-glow"
         >
           {loading ? (
             <div className="flex items-center justify-center">
@@ -163,7 +163,7 @@ export default function AuthForm({ onLogin }: AuthFormProps) {
             setError('')
             setFormData({ username: '', email: '', password: '' })
           }}
-          className="text-primary-400 hover:text-primary-300 text-sm"
+          className="text-neon-blue hover:text-neon-purple text-sm transition-colors"
         >
           {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
         </button>

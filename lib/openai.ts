@@ -1,14 +1,16 @@
 import OpenAI from 'openai';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Only initialize on server side
+const openai = typeof window === 'undefined' ? new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY || 'dummy-key',
+}) : null;
 
 export const GPT_MODELS = [
-  { id: 'gpt-4-turbo-preview', name: 'GPT-4 Turbo Preview', maxTokens: 128000 },
-  { id: 'gpt-4', name: 'GPT-4', maxTokens: 8192 },
-  { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo', maxTokens: 4096 },
-  { id: 'gpt-4-vision-preview', name: 'GPT-4 Vision Preview', maxTokens: 128000 },
+  { id: 'gpt-5', name: 'GPT-5', maxTokens: 200000 },
+  { id: 'gpt-4o-2024-12-01', name: 'GPT-4o (December 2024)', maxTokens: 128000 },
+  { id: 'gpt-4o-mini-2024-11-20', name: 'GPT-4o Mini (November 2024)', maxTokens: 128000 },
+  { id: 'gpt-4-turbo-2024-11-20', name: 'GPT-4 Turbo (November 2024)', maxTokens: 128000 },
+  { id: 'gpt-4o-vision-2024-11-20', name: 'GPT-4o Vision (November 2024)', maxTokens: 128000 },
 ] as const;
 
 export type GPTModel = typeof GPT_MODELS[number]['id'];
@@ -21,9 +23,19 @@ export interface ChatMessage {
 
 export async function generateChatResponse(
   messages: ChatMessage[],
-  model: GPTModel = 'gpt-3.5-turbo'
+  model: GPTModel = 'gpt-5'
 ): Promise<{ content: string; error?: string }> {
   try {
+    // Check if we're on server side and client is initialized
+    if (!openai) {
+      return { content: '', error: 'OpenAI client is not available. This function should only be called on the server side.' };
+    }
+
+    // Check if API key is properly configured
+    if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'dummy-key') {
+      return { content: '', error: 'OpenAI API key is not configured. Please set OPENAI_API_KEY in your environment variables.' };
+    }
+
     // Filter out system messages and prepare messages for OpenAI
     const openaiMessages = messages
       .filter(msg => msg.role !== 'system' || msg.content)
@@ -59,8 +71,18 @@ export async function generateChatResponse(
 
 export async function generateChatTitle(firstMessage: string): Promise<string> {
   try {
+    // Check if we're on server side and client is initialized
+    if (!openai) {
+      return 'New Chat';
+    }
+
+    // Check if API key is properly configured
+    if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'dummy-key') {
+      return 'New Chat';
+    }
+
     const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
+      model: 'gpt-5',
       messages: [
         {
           role: 'system',

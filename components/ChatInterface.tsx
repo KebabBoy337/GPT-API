@@ -26,17 +26,19 @@ interface ChatInterfaceProps {
   userId: number
   selectedChatId: number | null
   onChatSelect: (chatId: number | null) => void
+  onNewChat?: () => void
 }
 
 export default function ChatInterface({
   userId,
   selectedChatId,
   onChatSelect,
+  onNewChat,
 }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([])
   const [currentChat, setCurrentChat] = useState<Chat | null>(null)
   const [inputMessage, setInputMessage] = useState('')
-  const [selectedModel, setSelectedModel] = useState<GPTModel>('gpt-3.5-turbo')
+  const [selectedModel, setSelectedModel] = useState<GPTModel>('gpt-5')
   const [loading, setLoading] = useState(false)
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -98,6 +100,10 @@ export default function ChatInterface({
           chatId = data.chat.id
           setCurrentChat(data.chat)
           onChatSelect(chatId)
+          // Notify parent component to refresh chat list
+          if (onNewChat) {
+            onNewChat()
+          }
         } else {
           throw new Error('Failed to create chat')
         }
@@ -167,11 +173,11 @@ export default function ChatInterface({
     <div className="flex flex-col h-screen bg-dark-950">
       {/* Header */}
       {currentChat && (
-        <div className="border-b border-dark-700 bg-dark-900 p-4">
+        <div className="border-b border-white/10 glass-card p-4 backdrop-blur-xl">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-xl font-semibold text-white">{currentChat.title}</h1>
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-gray-300">
                 Model: {GPT_MODELS.find(m => m.id === currentChat.model)?.name}
               </p>
             </div>
@@ -195,13 +201,29 @@ export default function ChatInterface({
         {messages.length === 0 && !loading && (
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
-              <Bot className="h-16 w-16 text-gray-600 mx-auto mb-4" />
-              <h2 className="text-2xl font-semibold text-white mb-2">
+              <Bot className="h-20 w-20 text-neon-blue mx-auto mb-6 animate-float" />
+              <h2 className="text-3xl font-bold text-white mb-4 bg-gradient-to-r from-neon-blue to-neon-purple bg-clip-text text-transparent">
                 Welcome to xNode GPT
               </h2>
-              <p className="text-gray-400 max-w-md">
-                Start a conversation by typing a message below. You can also upload images for GPT-4 Vision.
+              <p className="text-gray-300 max-w-md mb-8 text-lg">
+                Start a conversation by typing a message below. You can also upload images for GPT Vision.
               </p>
+              <div className="glass-card p-6 rounded-2xl border border-neon-blue/30 max-w-sm mx-auto neon-border">
+                <label className="block text-sm font-medium text-white mb-3">
+                  Select Model
+                </label>
+                <select
+                  value={selectedModel}
+                  onChange={(e) => setSelectedModel(e.target.value as GPTModel)}
+                  className="input w-full"
+                >
+                  {GPT_MODELS.map((model) => (
+                    <option key={model.id} value={model.id}>
+                      {model.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
         )}
@@ -226,18 +248,18 @@ export default function ChatInterface({
       </div>
 
       {/* Input Area */}
-      <div className="border-t border-dark-700 bg-dark-900 p-4">
+      <div className="border-t border-white/10 glass-card p-4 backdrop-blur-xl">
         {uploadedImage && (
           <div className="mb-4 relative">
             <div className="relative inline-block">
               <img
                 src={uploadedImage}
                 alt="Uploaded"
-                className="max-w-xs max-h-48 rounded-lg border border-dark-600"
+                className="max-w-xs max-h-48 rounded-xl border border-neon-blue/30 shadow-lg"
               />
               <button
                 onClick={removeImage}
-                className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full p-1 hover:bg-red-700"
+                className="absolute -top-2 -right-2 bg-neon-red text-white rounded-full p-1 hover:bg-neon-red/80 transition-colors"
               >
                 ×
               </button>
@@ -245,7 +267,7 @@ export default function ChatInterface({
           </div>
         )}
 
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           <ImageUpload onImageUpload={handleImageUpload} />
           
           <div className="flex-1 relative">
@@ -263,7 +285,7 @@ export default function ChatInterface({
           <button
             onClick={sendMessage}
             disabled={loading || (!inputMessage.trim() && !uploadedImage)}
-            className="btn btn-primary px-4 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn btn-primary px-4 py-3 disabled:opacity-50 disabled:cursor-not-allowed animate-glow"
           >
             {loading ? (
               <Loader2 className="h-4 w-4 animate-spin" />

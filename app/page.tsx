@@ -11,6 +11,7 @@ export default function Home() {
   const [user, setUser] = useState<AuthUser | null>(null)
   const [loading, setLoading] = useState(true)
   const [selectedChatId, setSelectedChatId] = useState<number | null>(null)
+  const [refreshChats, setRefreshChats] = useState(0)
   const router = useRouter()
 
   useEffect(() => {
@@ -48,23 +49,26 @@ export default function Home() {
 
   const handleNewChat = () => {
     setSelectedChatId(null)
+    setRefreshChats(prev => prev + 1)
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-dark-950 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-500"></div>
+      <div className="min-h-screen bg-gradient-to-br from-dark-950 via-dark-900 to-dark-800 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-neon-blue"></div>
       </div>
     )
   }
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-dark-950 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-dark-950 via-dark-900 to-dark-800 flex items-center justify-center">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-white mb-2">xNode GPT</h1>
-            <p className="text-gray-400">Advanced ChatGPT Interface</p>
+            <h1 className="text-5xl font-bold text-white mb-4 bg-gradient-to-r from-neon-blue to-neon-purple bg-clip-text text-transparent animate-float">
+              xNode GPT
+            </h1>
+            <p className="text-gray-300 text-lg">Advanced ChatGPT Interface</p>
           </div>
           <AuthForm onLogin={handleLogin} />
         </div>
@@ -73,19 +77,21 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-dark-950 flex">
+    <div className="min-h-screen bg-gradient-to-br from-dark-950 via-dark-900 to-dark-800 flex">
       <Sidebar
         user={user}
         selectedChatId={selectedChatId}
         onChatSelect={setSelectedChatId}
         onNewChat={handleNewChat}
         onLogout={handleLogout}
+        refreshTrigger={refreshChats}
       />
       <main className="flex-1 flex flex-col">
         <ChatInterface
           userId={user.id}
           selectedChatId={selectedChatId}
           onChatSelect={setSelectedChatId}
+          onNewChat={handleNewChat}
         />
       </main>
     </div>
