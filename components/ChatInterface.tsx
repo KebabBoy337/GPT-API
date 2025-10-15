@@ -190,29 +190,13 @@ export default function ChatInterface({
         {messages.length === 0 && !loading && (
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
-              <Bot className="h-20 w-20 text-neon-blue mx-auto mb-6 animate-float" />
-              <h2 className="text-3xl font-bold text-white mb-4 bg-gradient-to-r from-neon-blue to-neon-purple bg-clip-text text-transparent">
+              <Bot className="h-20 w-20 text-accent-blue mx-auto mb-6 animate-float" />
+              <h2 className="text-3xl font-bold text-white mb-4 bg-gradient-to-r from-accent-blue to-accent-purple bg-clip-text text-transparent">
                 Welcome to xNode GPT
               </h2>
               <p className="text-gray-300 max-w-md mb-8 text-lg">
                 Start a conversation by typing a message below. You can also upload images for GPT Vision.
               </p>
-              <div className="glass-card p-6 rounded-2xl border border-neon-blue/30 max-w-sm mx-auto neon-border">
-                <label className="block text-sm font-medium text-white mb-3">
-                  Select Model
-                </label>
-                <select
-                  value={selectedModel}
-                  onChange={(e) => setSelectedModel(e.target.value as GPTModel)}
-                  className="input w-full"
-                >
-                  {GPT_MODELS.map((model) => (
-                    <option key={model.id} value={model.id}>
-                      {model.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
             </div>
           </div>
         )}
